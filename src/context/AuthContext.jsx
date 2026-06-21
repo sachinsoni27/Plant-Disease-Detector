@@ -6,7 +6,8 @@ import {
   createUserWithEmailAndPassword, 
   signOut,
   updateProfile,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   GithubAuthProvider
 } from 'firebase/auth';
@@ -19,9 +20,27 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Handle redirect result from Google/Github sign-in
+    getRedirectResult(auth).then(async (result) => {
+      if (result && result.user) {
+        const u = result.user;
+        const { doc, getDoc, setDoc } = await import('firebase/firestore');
+        const userDoc = await getDoc(doc(db, 'users', u.uid));
+        if (!userDoc.exists()) {
+          await setDoc(doc(db, 'users', u.uid), {
+            name: u.displayName || 'Anonymous',
+            email: u.email,
+            photoURL: u.photoURL,
+            providerId: u.providerId,
+            createdAt: new Date().toISOString()
+          });
+        }
+      }
+    }).catch(() => {});
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        // Get extra deatils from firestore if needed, or just use firebase profile
+        // Get extra details from firestore if needed, or just use firebase profile
         setUser({
           uid: firebaseUser.uid,
           email: firebaseUser.email,
@@ -70,21 +89,8 @@ export const AuthProvider = ({ children }) => {
       : new GithubAuthProvider();
     
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      
-      // Check if user document already exists
-      const userDoc = await getDoc(doc(db, 'users', user.uid));
-      if (!userDoc.exists()) {
-        await setDoc(doc(db, 'users', user.uid), {
-          name: user.displayName || 'Anonymous',
-          email: user.email,
-          photoURL: user.photoURL,
-          providerId: user.providerId,
-          createdAt: new Date().toISOString()
-        });
-      }
-      
+      // Use redirect instead of popup to avoid iframe security errors on deployed domains
+      await signInWithRedirect(auth, provider);
       return { success: true };
     } catch (error) {
       return { success: false, message: error.message };
