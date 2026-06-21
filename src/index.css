@@ -1,0 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: oklch(0.64 0.17 158.33);
+  --color-primary-foreground: oklch(0.97 0.01 10.66);
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+}
+
+:root {
+  --primary: 158 79% 42%;
+  --primary-foreground: 0 0% 100%;
+  --background: 210 40% 98%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-border: rgba(0, 0, 0, 0.08); /* More defined border */
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-blur: 24px;
+  --accent: 158 79% 42%;
+}
+
+.dark {
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-border: rgba(255, 255, 255, 0.15);
+  --glass-bg: rgba(15, 23, 42, 0.85);
+  --glass-blur: 32px;
+  --accent: 158 79% 42%;
+}
+
+body {
+  @apply bg-slate-50 transition-colors duration-500 text-slate-900 tracking-tight font-sans dark:bg-slate-950 dark:text-slate-100;
+  font-family: 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dark body {
+  background-image: radial-gradient(at 0% 0%, hsla(158, 79%, 42%, 0.15) 0px, transparent 50%),
+                    radial-gradient(at 100% 0%, hsla(210, 100%, 80%, 0.05) 0px, transparent 50%),
+                    radial-gradient(at 100% 100%, hsla(158, 79%, 42%, 0.1) 0px, transparent 50%);
+}
+
+.glass {
+  @apply backdrop-blur-[var(--glass-blur)] border border-[var(--card-border)] transition-all duration-500;
+  background: var(--glass-bg);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.glass-card {
+  @apply backdrop-blur-[var(--glass-blur)] border border-[var(--card-border)] rounded-[2.5rem] transition-all duration-500;
+  background: var(--glass-bg);
+  /* "Border Type Shadow" - Deep, crisp, and neutral */
+  box-shadow: 
+    0 0 0 1px rgba(0, 0, 0, 0.05), 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.glass-card:hover {
+  @apply -translate-y-1.5;
+  box-shadow: 
+    0 0 0 1.5px rgba(16, 185, 129, 0.1), 
+    0 25px 30px -5px rgba(0, 0, 0, 0.15), 
+    0 15px 15px -5px rgba(0, 0, 0, 0.08);
+}
+
+.dark .glass-card {
+  box-shadow: 
+    0 0 0 1px rgba(255, 255, 255, 0.05), 
+    0 20px 25px -5px rgba(0, 0, 0, 0.3), 
+    0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+.module-glow {
+  @apply relative;
+}
+
+/* Removed greenness - Changed to neutral glow or shadow extension */
+.module-glow::after {
+  content: '';
+  @apply absolute -inset-1 bg-slate-400/5 blur-xl rounded-[3rem] opacity-0 transition-opacity duration-500 -z-10;
+}
+
+.module-glow:hover::after {
+  @apply opacity-100;
+}
+
+.green-gradient {
+  background: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
+  background-size: 200% 200%;
+  animation: gradientMove 8s ease infinite;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.card-hover {
+  @apply transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-2xl;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300/60 rounded-full hover:bg-slate-400/90 transition-colors dark:bg-slate-700/60;
+}
